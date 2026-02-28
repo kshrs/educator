@@ -1,5 +1,5 @@
-/node_modules
-*.cache
-*.npm
+*node_modules/
+*.cache/
+*.npm/
 *.env
 *.log

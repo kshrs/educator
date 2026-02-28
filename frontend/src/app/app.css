@@ -1,0 +1,28 @@
+.app-container {
+  display: flex;
+  height: 100vh;
+  flex-direction: column;
+  background-color: #181818;
+  margin: 0;
+  padding: 0;
+  color: #d8d8d8;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-header {
+  color: #f4bf75;
+}
+
+.app-chat {
+  flex: 1;
+  text-align: left;
+  overflow-y: auto;
+  max-width: 800px;
+}
+
+.app-input {
+  padding: 30px;
+
+}
+

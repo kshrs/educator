@@ -19,10 +19,7 @@ const deleteTicket = (ticketID) => {
 };
 
 const hasTicket = (ticketID) => {
-    if (ticketStore.has(ticketID)) {
-        return true;
-    }
-    return false;
+    return ticketStore.has(ticketID);
 };
 
 module.exports = {

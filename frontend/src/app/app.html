@@ -1,0 +1,10 @@
+<div class="app-container">
+  <app-header class="app-header"></app-header>
+  <div class="app-chat">
+    <p class="ticket-status"><b>Generated Ticket: </b>{{ ticket() }}</p>
+    <app-chat [llmResponse]="llmResponse()"></app-chat>
+  </div>
+  <div class="app-input">
+    <app-input (submitPrompt)="handleUserPrompt($event)"></app-input>
+  </div>
+</div>
