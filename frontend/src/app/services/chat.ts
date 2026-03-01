@@ -19,4 +19,16 @@ export class ChatService {
   streamLLMResponse(ticketID: string) {
     return new EventSource(`${this.backendurl}/events/${ticketID}`);
   }
+
+  getHistory() {
+    return this.http.get(`${this.backendurl}/history`);
+  }
+
+  getUserName() {
+    return this.http.get(`${this.backendurl}/username`);
+  }
+
+  deleteChatHistory() {
+    return this.http.get(`${this.backendurl}/deleteHistory`);
+  }
 }

@@ -5,6 +5,9 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
+const db = require('./config/db.js');
+db.connectDB();
+
 // Middle ware for json
 app.use(express.json());
 app.use(cors());

@@ -1,30 +1,77 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ChatService } from './services/chat';
 import { Header } from './components/header.component';
 import { Input } from './components/input.component';
 import { Chat } from './components/chat.component';
+import { History } from './components/history.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, Header, Input, Chat],
+  imports: [RouterOutlet, Header, Input, Chat, History],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 
-export class App {
+export class App implements OnInit {
+  constructor(private chatService: ChatService) { }
 
   prompt = signal('');
   ticket = signal('');
   llmResponse = signal('');
+  history = signal<any[]>([]);
+  userName = signal('');
 
-  constructor(private chatService: ChatService) { }
+  ngOnInit() {
+    this.handleChatHistory();
+    this.handleUserName();
+  }
+
+  handleDeleteHistory() {
+    this.chatService.deleteChatHistory().subscribe({
+      next: () => {
+        this.handleChatHistory();
+      },
+      error: (err: any) => {
+        console.log(err.message);
+      }
+    });
+  }
 
   handleUserPrompt(promptInput: string) {
     this.createTicket(promptInput);
   }
 
+  handleUserName() {
+    this.chatService.getUserName().subscribe({
+      next: (response: any) => {
+        if (response && response.username) {
+          this.userName.set(response.username)
+          return;
+        }
+      },
+      error: (err: any) => {
+        console.log(err.message);
+      }
+    });
+  }
+
+  handleChatHistory() {
+    this.chatService.getHistory().subscribe({
+      next: (response: any) => {
+        if (response && response.history) {
+          this.history.set(response.history);
+        }
+      },
+      error: (error: any) => {
+        console.log(error.message);
+      }
+    });
+
+  }
+
   createTicket(userPrompt: string) {
+    this.history.update(current => [...current, {role: this.userName(), parts: [ { text: userPrompt }]}]);
     this.chatService.generateTicket(userPrompt).subscribe({
       next: (response: any) => {
         if (response && response.ticketID) {
@@ -48,6 +95,7 @@ export class App {
       try {
         const data = JSON.parse(event.data);
         if (data.includes("stream closed")) {
+          this.history.update(current => [...current, {role: 'model', parts: [ { text: this.llmResponse() }]}]);
           this.llmResponse.update(current => current + "\n\nEnd of stream");
           eventSource.close();
           return;
@@ -60,7 +108,6 @@ export class App {
       }
     }
     eventSource.onopen = () => {
-      this.llmResponse.set("Generating Content\n");
     }
 
     eventSource.onerror = () => {
