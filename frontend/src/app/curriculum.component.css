@@ -1,0 +1,100 @@
+/* === BASE LAYOUT === */
+.layout-wrapper {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  overflow: hidden;
+}
+
+/* === SIDEBARS === */
+.sidebar {
+  width: 280px;
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.right-sidebar {
+  width: 260px;
+  background-color: var(--bg-sidebar);
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.sidebar::-webkit-scrollbar,
+.right-sidebar::-webkit-scrollbar { width: 6px; }
+
+.sidebar::-webkit-scrollbar-thumb,
+.right-sidebar::-webkit-scrollbar-thumb { background-color: var(--border-color); }
+
+/* === MAIN CONTENT === */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border-top: 2px solid var(--accent-red);
+}
+
+.app-header {
+  padding: 16px 24px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+/* === CHAT SCROLL AREA === */
+.chat-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  min-height: 0;
+}
+
+.chat-container {
+  width: 100%;
+  max-width: 1000px;
+}
+
+.chat-scroll-area::-webkit-scrollbar { width: 8px; }
+.chat-scroll-area::-webkit-scrollbar-thumb { background-color: var(--border-color); }
+
+/* === INPUT SECTION === */
+.input-section {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 20px 24px;
+  box-sizing: border-box;
+  border-top: 1px solid var(--border-color);
+}
+
+/* === RIGHT SIDEBAR GUIDE BUTTONS === */
+.action-btn {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 1rem 1.2rem;
+  background-color: var(--bg-input);
+  color: var(--accent-color);
+  border: 2px solid var(--accent-color);
+  box-shadow: 3px 3px 0px var(--accent-color);
+  cursor: default;
+  opacity: 0.6;
+  text-align: left;
+  line-height: 1.5;
+}

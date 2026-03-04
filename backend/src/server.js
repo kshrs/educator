@@ -2,17 +2,19 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 
+// .env lives one dir up, so explicitly state ../.env to avoid path breakage
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const db = require('./config/db.js');
 db.connectDB();
 
-// Middle ware for json
-app.use(express.json());
-app.use(cors());
+//  --- Middlewares ---
+app.use(express.json()); // Parses incoming JSON requests into req.body
+app.use(cors()); // Enbable Cross-Origin Resouce Sharing(CORS) to communicate with the frontend.
 
 
+// --- Routes ---
 const routes = require('./routes/routes.js');
 
 app.use('/api', routes.router);

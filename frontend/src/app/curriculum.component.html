@@ -1,0 +1,43 @@
+<div class="layout-wrapper">
+
+  <aside class="sidebar">
+    <app-curriculum-sidebar
+      [iterations]="iterations()"
+      [selectedIndex]="selectedIndex()"
+      (selectIteration)="handleSelectIteration($event)"
+      (clearIterations)="handleClearIterations()">
+    </app-curriculum-sidebar>
+  </aside>
+
+  <main class="main-content">
+    <app-header
+      class="app-header"
+      (fixCurriculum)="handleFinalize()">
+    </app-header>
+
+    <div class="chat-scroll-area">
+      <div class="chat-container">
+        <app-curriculum-chat
+          [submittedPrompt]="submittedPrompt()"
+          [llmResponse]="llmResponse()"
+          [iterations]="iterations()"
+          [selectedIndex]="selectedIndex()"
+          (selectIteration)="handleSelectIteration($event)">
+        </app-curriculum-chat>
+      </div>
+    </div>
+
+    <div class="input-section">
+      <app-input (submitPrompt)="handleUserPrompt($event)"></app-input>
+    </div>
+  </main>
+
+  <aside class="right-sidebar">
+    <h2>Guide</h2>
+    <button class="action-btn" disabled>01 — State your background, skill set and current level.</button>
+    <button class="action-btn" disabled>02 — State the topic and your learning objectives.</button>
+    <button class="action-btn" disabled>03 — Add constraints or preferences (depth, pace, tools).</button>
+    <button class="action-btn" disabled>04 — Iterate until satisfied, then select and finalize.</button>
+  </aside>
+
+</div>

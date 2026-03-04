@@ -1,5 +1,39 @@
-/* You can add global styles to this file, and also import other style files */
-body {
-  background-color: #181818;
+@import 'katex/dist/katex.min.css';
+
+/* === VARIABLES === */
+:root {
+  --bg-main:        #FFFFFF;
+  --bg-sidebar:     #F5F5F5;
+  --bg-input:       #FFFFFF;
+  --accent-color:   #000000;
+  --text-primary:   #000000;
+  --text-secondary: #6B7280;
+  --border-color:   #D1D5DB;
+  --accent-red:     #F2613F;
+  font-size: 16px;
+}
+
+/* === RESETS === */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
   margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: 'Courier New', Courier, monospace;
+}
+
+/* === GLOBAL SCROLLBAR === */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background-color: var(--border-color);
 }

@@ -1,26 +1,18 @@
 const crypto = require('crypto');
 
+// In-memory store that maps ticketID → request payload.
+// Tickets are created on POST, consumed on GET (SSE), then deleted.
+// Lives in memory intentionally — tickets are short-lived (seconds) and
+// don't need to survive a server restart. A Redis store would replace this
+// if the app scales to multiple Node processes.
 const ticketStore = new Map();
 
-const getRandomUUID = () => {
-    return crypto.randomUUID();
-};
+const getRandomUUID = () => crypto.randomUUID();
 
-const getTicket = (ticketID) => {
-    return ticketStore.get(ticketID);
-};
-
-const setTicket = (ticketID, value) => {
-    return ticketStore.set(ticketID, value);
-};
-
-const deleteTicket = (ticketID) => {
-    return ticketStore.delete(ticketID);
-};
-
-const hasTicket = (ticketID) => {
-    return ticketStore.has(ticketID);
-};
+const getTicket    = (ticketID) => ticketStore.get(ticketID);
+const setTicket    = (ticketID, value) => ticketStore.set(ticketID, value);
+const deleteTicket = (ticketID) => ticketStore.delete(ticketID);
+const hasTicket    = (ticketID) => ticketStore.has(ticketID);
 
 module.exports = {
     getRandomUUID,
@@ -28,4 +20,4 @@ module.exports = {
     setTicket,
     deleteTicket,
     hasTicket
-}
+};

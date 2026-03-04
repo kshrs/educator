@@ -1,15 +1,23 @@
 const express = require('express');
 const router = express.Router();
 
-const chatController = require('../controllers/chat.controller.js');
+// --- Health / Config Routes ---
+const healthController = require('../controllers/health.controller.js');
 
-router.post('/prompt', chatController.generateTicket);
-router.get('/events/:ticketID', chatController.getLLMResponse);
-router.get('/history', chatController.getChatHistory);
-router.get('/username', chatController.getUserName);
-router.get('/deleteHistory', chatController.deleteChatHistory);
+router.get('/health/config', healthController.getConfig);
+router.post('/health/config', healthController.saveConfig);
+router.get('/health/status', healthController.checkApiStatus);
 
-module.exports = {
-    router
-};
+// --- Curriculum Functionalities ---
+const curriculumController = require('../controllers/curriculum.controller.js');
 
+router.post('/curriculum/start', curriculumController.startCurriculum);
+router.post('/curriculum/iterate', curriculumController.iterateCurriculum);
+router.get('/curriculum/iterate/:ticketID', curriculumController.streamCurriculumIteration);
+router.put('/curriculum/select', curriculumController.selectIteration);
+router.post('/curriculum/finalize', curriculumController.finalizeCurriculum);
+router.get('/curriculum/list', curriculumController.listCurricula);
+router.get('/curriculum/:curriculumId', curriculumController.getCurriculum);
+router.delete('/curriculum/:curriculumId', curriculumController.deleteCurriculum);
+
+module.exports = { router };
