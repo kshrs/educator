@@ -20,4 +20,20 @@ router.get('/curriculum/list', curriculumController.listCurricula);
 router.get('/curriculum/:curriculumId', curriculumController.getCurriculum);
 router.delete('/curriculum/:curriculumId', curriculumController.deleteCurriculum);
 
+// --- Learning Functionalities ---
+const learningController = require('../controllers/learning.controller.js');
+router.post('/learning/create/:curriculumId', learningController.createLearningCurriculum);
+router.get('/learning/list', learningController.listLearningCurricula);
+router.get('/learning/:id', learningController.getLearningCurriculumById);
+router.delete('/learning/:id', learningController.deleteLearningCurriculum)
+router.patch('/learning/:id/topic', learningController.updateTopicContent);
+// /learning/:id/topic 
+// body = {
+//  moduleIndex,
+//  topicIndex,
+//  field => 'assignment' | 'research',
+//  value => submission content
+// }
+router.post('/learning/:id/topic/generate', learningController.generateLearningContentForTopic);
+
 module.exports = { router };

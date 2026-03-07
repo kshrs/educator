@@ -33,7 +33,7 @@ export interface CurriculumIteration {
 
             <div class="iter-content">
               <div class="iter-prompt">{{ iter.userPrompt }}</div>
-              <div class="iter-response" [innerHTML]="parseContent(iter.markdownResponse)"></div>
+              <!-- <div class="iter-response" [innerHTML]="parseContent(iter.markdownResponse)"></div>-->
             </div>
 
           </button>

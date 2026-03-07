@@ -72,6 +72,7 @@ const saveConfig = (req, res) => {
     if (modelName !== undefined) parsed.MODEL_NAME = modelName.trim();
 
     fs.writeFileSync(ENV_PATH, serializeEnv(parsed), 'utf-8');
+    require('dotenv').config({ path: ENV_PATH, override: true});
 
     res.status(200).json({ message: 'Config saved.' });
   } catch (e) {

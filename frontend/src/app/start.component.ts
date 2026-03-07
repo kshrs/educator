@@ -306,7 +306,7 @@ export class StartDashboard {
   constructor(private router: Router) {}
 
   onStartBtnClick() {
-    this.router.navigate(['/curriculumGenerator']);
+    this.router.navigate(['/main']);
   }
 
   onHealthBtnClick() {

@@ -38,7 +38,6 @@ Ask them leading questions, and force the user to think critically.
 //    graded projects with no post-submission dialogue.
 //    Source: "Socratic Wisdom in the Age of AI" Frontiers 2025
 //    https://www.frontiersin.org/journals/education/articles/10.3389/feduc.2025.1528603/full
-
 const CURRICULUM_ITERATION_PERSONA = `
 You are an expert curriculum architect and learning scientist.
 You design structured, personalised self-learning curricula grounded in evidence-based pedagogy.
@@ -196,6 +195,9 @@ const generateResponseForCurriculumIteration = async (chatHistory) => {
     const responseStream = await ai.models.generateContentStream({
         model: process.env.MODEL_NAME,
         config: { systemInstruction: CURRICULUM_ITERATION_PERSONA },
+        tools: {
+            googleSearch: { }
+        },
         contents: chatHistory
     });
     return responseStream;
@@ -232,8 +234,193 @@ const generateResponseForFinalizeCurriculum = async (markdownCurriculum) => {
     return cleaned;
 };
 
+const GENERATE_MATERIAL_PERSONA = `
+You are an expert learning content author writing for self-directed learners who dislike rigid traditional curricula.
+
+## YOUR INPUT
+You will receive a JSON object with:
+- topicTitle: the specific topic to cover
+- curriculumTitle: the overall curriculum this belongs to
+- learningObjectives: what the learner is trying to achieve
+- learnerLevel: their current skill level
+
+## YOUR JOB
+Write comprehensive, engaging learning material for this topic.
+- Write in clear prose, not bullet points
+- Use examples, analogies, and code snippets where relevant
+- Assume the learner is intelligent but new to this specific topic
+- Connect concepts back to the learning objectives
+- End with a "Key Takeaways" section
+
+## OUTPUT FORMAT
+Return ONLY a valid JSON object. No markdown fences, no preamble.
+First character must be { and last must be }.
+
+{ "learningMaterial": "full markdown content string here" }
+
+## REJECT
+If the input is not a recognisable learning topic, return only:
+{ "error": "Invalid topic input." }
+`;
+
+const GENERATE_ASSIGNMENT_PERSONA = `
+You are an expert learning designer creating assessments for self-directed learners.
+Assessments should build genuine understanding, not test memorisation.
+
+## YOUR INPUT
+You will receive a JSON object with:
+- topicTitle: the topic the learner just studied
+- curriculumTitle: the overall curriculum
+- learningObjectives: what the learner is trying to achieve
+- learnerLevel: their current skill level
+
+## YOUR JOB
+Generate two tasks:
+1. A homework assignment — a concrete hands-on task the learner implements or applies
+2. A research task — find one real paper, article, or authoritative source related to this topic
+   and write a 150-200 word brief on what it says and why it matters
+
+Both tasks should be specific, actionable, and connected to real understanding — not busywork.
+
+## OUTPUT FORMAT
+Return ONLY a valid JSON object. No markdown fences, no preamble.
+First character must be { and last must be }.
+
+{
+  "assignment": "full description of the homework task",
+  "research": "full description of the research task"
+}
+
+## REJECT
+If the input is not a recognisable learning topic, return only:
+{ "error": "Invalid topic input." }
+`;
+
+const GENERATE_RESOURCES_PERSONA = `
+You are a research librarian curating learning resources for self-directed learners.
+
+## YOUR INPUT
+You will receive a JSON object with:
+- topicTitle: the specific topic
+- curriculumTitle: the overall curriculum
+- learnerLevel: their current skill level
+
+## YOUR JOB
+Find 3-5 high quality, real, accessible resources for this topic.
+Prioritise: official documentation, well-known textbooks, reputable courses, research papers.
+Do NOT invent URLs. Only include resources you are confident exist.
+
+## OUTPUT FORMAT
+Return ONLY a valid JSON object. No markdown fences, no preamble.
+First character must be { and last must be }.
+
+{
+  "resources": [
+    { "title": "resource title", "url": "https://..." },
+    { "title": "resource title", "url": "https://..." }
+  ]
+}
+
+## REJECT
+If the input is not a recognisable learning topic, return only:
+{ "error": "Invalid topic input." }
+`;
+
+const EVALUATION_PERSONA = `
+You are a strict but supportive evaluator for self-directed learners.
+Your goal is not to grade — it is to push the learner toward genuine understanding.
+A submission that merely restates facts or copies definitions is incomplete.
+A submission that demonstrates reasoning, application, or original thought is complete.
+
+## YOUR INPUT
+You will receive a JSON object with:
+- topicTitle: the specific topic the task is about
+- curriculumTitle: the overall curriculum this belongs to
+- description: the exact task the learner was asked to complete
+- submission: what the learner submitted
+
+## YOUR JOB
+1. Read the description carefully — evaluate the submission against what was actually asked
+2. Assess whether the learner demonstrated genuine understanding or surface-level completion
+3. Write a review in markdown — be specific, cite what they did well and what is missing
+4. If the submission is empty, too short, or clearly off-topic — mark it incomplete
+5. If the submission shows reasonable effort and understanding — mark it complete
+6. Never be harsh. Be direct, constructive, and encourage deeper thinking.
+
+## OUTPUT FORMAT
+Return ONLY a valid JSON object. No markdown fences, no preamble.
+First character must be { and last must be }.
+
+{
+  "review": "markdown review string — specific feedback on the submission",
+  "status": "done" | "pending"
+}
+
+## REJECT
+If the input is not a recognisable learning submission, return only:
+{ "error": "Invalid submission input." }
+`;
+
+// Curriculum Curator
+const callForJSON = async (persona, userContent) => {
+    const response = await ai.models.generateContent({
+        model: process.env.MODEL_NAME,
+        config: { systemInstruction: persona },
+        contents: [
+            {
+                role: 'user',
+                parts: [{ text: JSON.stringify(userContent) }]
+            }
+        ]
+    });
+
+    const rawText = response.candidates[0].content.parts[0].text;
+    const cleaned = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+    JSON.parse(cleaned);
+    return cleaned;
+};
+
+const generateTopicMaterial = async (topicTitle, curriculumTitle, learningObjectives, learnerLevel) => {
+    return await callForJSON(GENERATE_MATERIAL_PERSONA, {
+        topicTitle,
+        curriculumTitle,
+        learningObjectives,
+        learnerLevel
+    });
+};
+
+const generateTopicAssignmentAndResearch = async (topicTitle, curriculumTitle, learningObjectives, learnerLevel) => {
+    return await callForJSON(GENERATE_ASSIGNMENT_PERSONA, {
+        topicTitle,
+        curriculumTitle,
+        learningObjectives,
+        learnerLevel
+    });
+};
+
+const generateTopicResources = async (topicTitle, curriculumTitle, learnerLevel) => {
+    return await callForJSON(GENERATE_RESOURCES_PERSONA, {
+        topicTitle,
+        curriculumTitle,
+        learnerLevel
+    });
+};
+
+const evaluateSubmission = async (topicTitle, curriculumTitle, description, submission) => {
+    return await callForJSON(EVALUATION_PERSONA, {
+        topicTitle,
+        curriculumTitle,
+        description,
+        submission
+    });
+};
+
 module.exports = {
     generateLLMResponse,
     generateResponseForCurriculumIteration,
-    generateResponseForFinalizeCurriculum
+    generateResponseForFinalizeCurriculum,
+    generateTopicMaterial,
+    generateTopicAssignmentAndResearch,
+    generateTopicResources,
+    evaluateSubmission
 };

@@ -4,6 +4,7 @@ import { Header } from './components/header.component';
 import { Input } from './components/input.component';
 import { CurriculumChat } from './components/curriculumChat.component';
 import { CurriculumSidebar, CurriculumIteration } from './components/curriculumSidebar.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-curriculum-generator',
@@ -12,7 +13,7 @@ import { CurriculumSidebar, CurriculumIteration } from './components/curriculumS
   styleUrl: 'curriculum.component.css'
 })
 export class CurriculumGenerator implements OnInit {
-  constructor(private chatService: ChatService) {}
+  constructor(private chatService: ChatService, private router: Router) {}
 
   // Curriculum session state
   curriculumId = signal<string | null>(null);
@@ -146,12 +147,22 @@ export class CurriculumGenerator implements OnInit {
       next: (res) => {
         this.finalizedCurriculum.set(res.finalizedCurriculum);
         this.isFinalizing.set(false);
-        // Future: navigate to /modules/:curriculumId
+
+        this.chatService.createLearningCurriculum(this.curriculumId()!).subscribe({
+          next: (res) => {
+            this.router.navigate(['/main']);
+          },
+          error: (err) => {
+            console.error('[curriculum] finalized curriculum generation failed:', err.message);
+            this.isFinalizing.set(false);
+          }
+        })
       },
       error: (err) => {
         console.error('[curriculum] finalize failed:', err.message);
         this.isFinalizing.set(false);
       }
+
     });
   }
 

@@ -32,28 +32,6 @@ export class ChatService {
 
   constructor(private http: HttpClient) {}
 
-  // --- Chat ---
-  generateTicket(userPrompt: string) {
-    return this.http.post(`${this.base}/prompt`, { prompt: userPrompt });
-  }
-
-  streamLLMResponse(ticketID: string) {
-    return new EventSource(`${this.base}/events/${ticketID}`);
-  }
-
-  getHistory() {
-    return this.http.get(`${this.base}/history`);
-  }
-
-  getUserName() {
-    return this.http.get(`${this.base}/username`);
-  }
-
-  deleteChatHistory() {
-    // Fixed: GET → DELETE to match the corrected route
-    return this.http.delete(`${this.base}/history`);
-  }
-
   // --- Health / Config ---
   getConfig(): Observable<ConfigResponse> {
     return this.http.get<ConfigResponse>(`${this.base}/health/config`);
@@ -66,6 +44,8 @@ export class ChatService {
   checkHealth(): Observable<HealthResponse> {
     return this.http.get<HealthResponse>(`${this.base}/health/status`);
   }
+
+  // -- Curriculum Curate ---
 
   startCurriculum(topic: string): Observable<{ curriculumId: string; topic: string }> {
     return this.http.post<{ curriculumId: string; topic: string }>(
@@ -94,4 +74,29 @@ export class ChatService {
   getCurriculum(curriculumId: string): Observable<CurriculumDoc> {
     return this.http.get<CurriculumDoc>(`${this.base}/curriculum/${curriculumId}`);
   }
+
+  getCurricula(): Observable<{ curricula: any[] }> {
+    return this.http.get<{ curricula: any[] }>(`${this.base}/curriculum/list`);
+  }
+
+  // -- Learning Curriculum ---
+  createLearningCurriculum(curriculumId: string): Observable<{ learningCurriculumId: string}> {
+    return this.http.post<{ learningCurriculumId: string }>(`${this.base}/learning/create/${curriculumId}`, { });
+  }
+  generateTopicContent(id: string, body: { moduleIndex: number, topicIndex: number }): Observable<any> {
+    return this.http.post(`${this.base}/learning/${id}/topic/generate`, body);
+  }
+  getLearningCurricula(): Observable<{ curricula: any[]}> {
+    return this.http.get<{ curricula: any[]}>(`${this.base}/learning/list`);
+  }
+  getLearningCurriculumById(id: string): Observable<any> {
+    return this.http.get(`${this.base}/learning/${id}`);
+  }
+  updateTopicContent(id: string, body: any): Observable<any> {
+    return this.http.patch(`${this.base}/learning/${id}/topic`, body);
+  }
+  deleteLearningCurriculum(curriculumId: string) {
+    return this.http.delete(`${this.base}/learning/${curriculumId}`, { });
+  }
+
 }
