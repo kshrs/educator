@@ -94,6 +94,10 @@ const learningCurriculumSchema = mongoose.Schema({
         type: String,
         default: ''
     },
+    learnerLevel: {
+        type: String,
+        default: 'beginner6'
+    },
     status: {
         type: String,
         enum: ['generating', 'done'],

@@ -55,6 +55,10 @@ const finalizedCurriculumSchema = mongoose.Schema({
         researchTasks: Number,
         ungradedProjects: Number
     },
+    learnerLevel: {
+        type: String,
+        default: 'beginner6'
+    },
     status: {
         type: String,
         default: 'draft'

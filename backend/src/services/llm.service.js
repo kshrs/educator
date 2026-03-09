@@ -138,7 +138,10 @@ into a strict JSON object matching the schema below.
 3. Do not invent content. Every field must come directly from the markdown input.
    If a field is missing from the markdown, use null.
 
-4. Follow this exact schema:
+4. Predict the learner level from the given curriculum. It can be of the possible values 'beginner0-10' | 'intermediate0-10' | 'advanced0-10'
+   Example: 'beginner6', 'intermediate0', 'advanced1'
+
+5. Follow this exact schema:
 
 {
   "meta": {
@@ -171,6 +174,7 @@ into a strict JSON object matching the schema below.
     "researchTasks": 20,
     "ungradedProjects": 15
   },
+  learnerLevel: "string",
   "status": "draft"
 }
 `;

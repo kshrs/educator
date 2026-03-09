@@ -28,7 +28,7 @@ const createLearningCurriculum = async (req, res) => {
             });
             return;
         }
-        const doc = await learningCurriculum.createLearningCurriculum(req.params.curriculumId, finalizedCurriculum.meta.title, finalizedCurriculum.meta.overview, finalizedCurriculum.modules);
+        const doc = await learningCurriculum.createLearningCurriculum(req.params.curriculumId, finalizedCurriculum.meta.title, finalizedCurriculum.meta.overview, finalizedCurriculum.modules, finalizedCurriculum.learnerLevel);
 
         res.status(200).json({
             learningCurriculumId: doc._id,
@@ -48,15 +48,15 @@ const generateLearningContentForTopic = async (req, res) => {
         const learningDoc = await learningCurriculum.getById(learningCurriculumId);
         const fullCurriculum = await curriculum.getCurriculumById(learningDoc.curriculumId);
 
-        const { meta, modules } = fullCurriculum.finalizedCurriculum;
+        const { meta, modules, learnerLevel } = fullCurriculum.finalizedCurriculum;
 
         const topic = modules[moduleIndex].topics[topicIndex];
 
         const [topicMaterial, assignmentAndResearchMaterial, resourceMaterial] = await withRetry(() => 
             Promise.all([
-                llm.generateTopicMaterial(topic.title, meta.title, meta.learningObjectives, 'intermediate'),
-                llm.generateTopicAssignmentAndResearch(topic.title, meta.title, meta.learningObjectives, 'intermediate'),
-                llm.generateTopicResources(topic.title, meta.title, 'intermediate'),
+                llm.generateTopicMaterial(topic.title, meta.title, meta.learningObjectives, learnerLevel),
+                llm.generateTopicAssignmentAndResearch(topic.title, meta.title, meta.learningObjectives, learnerLevel),
+                llm.generateTopicResources(topic.title, meta.title, learnerLevel),
             ])
         );
 

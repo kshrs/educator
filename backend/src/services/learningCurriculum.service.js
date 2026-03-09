@@ -11,13 +11,14 @@ const getDevUserId = async () => {
     return user._id;
 };
 
-const createLearningCurriculum = async (curriculumId, title, overview, modules) => {
+const createLearningCurriculum = async (curriculumId, title, overview, modules, learnerLevel) => {
     const userId = await getDevUserId();
     const learningCurriculum = await LearningCurriculum.create({
         userId,
         curriculumId,
         title,
         overview,
+        learnerLevel,
         modules,
         status: 'generating'
     });
