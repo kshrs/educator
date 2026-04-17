@@ -3,7 +3,9 @@
 services:
   # service named 'db'
   db:
+    restart: always
     image: mongo:latest
+    command: ["--wiredTigerCacheSizeGB", "0.25"]
     ports: 
       - 27017:27017
     volumes:
